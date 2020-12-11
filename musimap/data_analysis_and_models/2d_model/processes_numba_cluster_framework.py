@@ -1,4 +1,6 @@
-# Snippet of the 2D model process used in the GPU cluster framework. Here, numba is used to speed up critical processes that were identified as being slow in execution (gamma functions...). The whole model uses many different connected processes that are dependent on each other. The processes represent e.g. soil response to rainfall, translation of rainfall to discharge etc...
+# Snippet of the 2D model process used in the GPU cluster framework. Here, numba is used to speed up critical processes that were identified as being slow in execution 
+# (gamma functions...). The whole model uses many different connected processes that are dependent on each other. The processes represent e.g. soil response to rainfall,
+# translation of rainfall to discharge etc...
 
 from numba.extending import get_cython_function_address
 from numba import vectorize, njit
