@@ -1,0 +1,5 @@
+We make sure we’re inside of the local-server directory where the package.json file is, and run npm install from terminal.
+
+Npm stands for Node Package Manager, and by running npm install, npm will download and install the dependencies listed in our package.json file.
+
+When this is finished, we now have an added node_modules directory that contains the downloaded packages, and we additionally have this package-lock.json file that contains information about the downloaded dependencies.

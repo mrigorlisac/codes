@@ -1,0 +1,500 @@
+%2multibyte Version: 5.50.0.2960 CodePage: 65001
+
+\documentclass{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%TCIDATA{OutputFilter=LATEX.DLL}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{Codepage=65001}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=Manual}
+%TCIDATA{Created=Tuesday, February 20, 2018 06:37:02}
+%TCIDATA{LastRevised=Thursday, November 08, 2018 21:10:44}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{<META NAME="DocumentShell" CONTENT="Books\Jonathan Lewin VCC Style">}
+%TCIDATA{CSTFile=jonathan-vcc-style.cst}
+%TCIDATA{PageSetup=72,72,72,72,1}
+%TCIDATA{Counters=arabic,1}
+%TCIDATA{ComputeDefs=
+%$\vspace{1pt}\mu =0$
+%$\sigma =1$
+%$x=2$
+%$f\left( x\mid \mu ,\sigma ^{2}\right) =\frac{1}{\sqrt{2\pi \sigma ^{2}}}e^{-%
+%\frac{\left( x-\mu \right) ^{2}}{2\sigma ^{2}}}$
+%}
+
+%TCIDATA{AllPages=
+%H=36
+%F=36,\PARA{038<p type="texpara" tag="Body Text" >\hfill \thepage \hfill }
+%}
+
+
+\input{tcilatex}
+\begin{document}
+
+
+\section{\protect\vspace{1pt}Backpropagation notes}
+
+\subsection{\protect\vspace{1pt}Definitions and Notation}
+
+We define
+
+$L=$ number of layers in the network\newline
+Layers are indexed as $l=1,2,\cdots ,L-1,L$\newline
+Nodes in a given layer $l$ are indexed as $j=0,1,\cdots ,n-1$\newline
+Nodes in layer $l-1$ are indexed as $k=0,1,\cdots ,n-1$\newline
+
+$y_{j}$ $=$ the desired value of node $j$ in the output layer $L$ for a
+single training sample
+
+$C_{0}=$ loss function of the network for a single training sample (sum of
+squared errors)
+
+$w_{jk}^{(l)}=$ the weight of the connection that connects node $k$ in layer 
+$l-1$ to node $j$ in layer $l$
+
+$w_{j}^{\left( l\right) }=$ the vector that contains all weights connected
+to node $j$ in layer $l$ by each node in layer $l-1$
+
+$z_{j}^{(l)}=$ the input for node $j$ in layer $l$
+
+$g^{\left( l\right) }$ $=$ the activation function used for layer $l$
+
+$a_{j}^{(l)}=$ the activation output of node $j$ in layer $l$\vspace{1pt}
+
+\subsection{Observations}
+
+\subsubsection{Loss $C_{0}$}
+
+Observe that the expression 
+\[
+\left( a_{j}^{(L)}-y_{j}\right) ^{2} 
+\]%
+is the squared difference of the activation output$\ $and the desired output
+for node $j$ in the output layer $L$.
+
+This can be interpreted as the loss for node $j$ in layer $L$.
+
+Therefore, to calculate the total loss, we should sum this squared
+difference for each node $j$ in the output layer $L$.
+
+This is expressed as%
+\[
+C_{0}=\sum_{j=0}^{n-1}\left( a_{j}^{(L)}-y_{j}\right) ^{2}\text{.} 
+\]
+
+\subsubsection{\protect\vspace{1pt}Input $z_{j}^{(l)}$}
+
+We know that the input for node $j$ in layer $l$ is the weighted sum of the
+activation outputs from the previous layer $l-1$.
+
+An individual term from the sum looks like this:%
+\[
+w_{jk}^{(l)}a_{k}^{(l-1)} 
+\]%
+So, the input for a given node $j$ in layer $l\ $is expressed as 
+\[
+z_{j}^{(l)}=\sum_{k=0}^{n-1}w_{jk}^{(l)}a_{k}^{(l-1)}\text{.} 
+\]
+
+\subsubsection{Activation Output $a_{j}^{(l)}$}
+
+We know that the activation output of a given node $j$ in layer $l$ is the
+result of passing the input, $z_{j}^{\left( l\right) }$, to whatever
+activation function we choose to use $g^{\left( l\right) }$.
+
+Therefore, the activation output of node $j$ in layer $l$ is expressed as 
+\[
+a_{j}^{(l)}=g^{\left( l\right) }\left( z_{j}^{\left( l\right) }\right) \text{%
+.} 
+\]
+
+\subsubsection{Expressing $C_{0}$ as a composition of functions}
+
+Recall the definition of $C_{0}$,%
+\[
+C_{0}=\sum_{j=0}^{n-1}\left( a_{j}^{(L)}-y_{j}\right) ^{2}\text{.} 
+\]%
+So the loss of a single node $j$ in the output layer $L$ can be expressed as%
+\[
+C_{0_{j}}=\left( a_{j}^{(L)}-y_{j}\right) ^{2}\text{.} 
+\]%
+We see that $C_{0_{j}}$ is a function of the activation output of node $j$
+in layer $L$.
+
+So, we can express $C_{0_{j}}$ as a function of $a_{j}^{\left( L\right) }$ as%
+\[
+C_{0_{j}}\left( a_{j}^{\left( L\right) }\right) \text{.} 
+\]
+
+Observe from the definition of $C_{0_{j}}$ that $C_{0_{j}}$ also depends on $%
+y_{j}$. Since $y_{j}$ is a constant, we only observe $C_{0_{j}}$ as a
+function of $a_{j}^{\left( L\right) }$, and $y_{j}$ as a parameter that
+helps define this function.\newline
+\newline
+
+The activation output of node $j$ in the output layer $L$ is a function of
+the input for node $j$.
+
+From an earlier observation, we know we can express this as%
+\[
+a_{j}^{(L)}=g^{\left( L\right) }\left( z_{j}^{\left( L\right) }\right) \text{%
+.} 
+\]
+
+The input for node $j$ is a function of all the weights connected to node $j$%
+.
+
+So, we can express $z_{j}^{\left( L\right) }$ as a function of $%
+w_{j}^{\left( L\right) }$ as%
+\[
+z_{j}^{\left( L\right) }\left( w_{j}^{\left( L\right) }\right) \text{.} 
+\]%
+Therefore,
+
+\[
+C_{0_{j}}=C_{0_{j}}\left( a_{j}^{\left( L\right) }\left( 
+\rule[-0.1in]{0in}{0.3in}z_{j}^{\left( L\right) }\left( w_{j}^{\left(
+L\right) }\right) \right) \right) \text{.} 
+\]%
+So, we can see that $C_{0}$ is a composition of functions.
+
+We know that 
+\[
+C_{0}=\sum_{j=0}^{n-1}C_{0_{j}}\text{,} 
+\]%
+so using the same logic, we observe that the total loss of the network for a
+single input is also a composition of functions.
+
+This is useful in order to understand how to differentiate $C_{0}$.
+
+To differentiate a composition of functions, we use the chain rule.
+
+\subsection{Calculations}
+
+\subsubsection{Derivative of the loss with respect to weights}
+
+Let's look at a single weight that connects node $2$ in layer $L-1$ to node $%
+1$ in layer $L$.
+
+This weight is denoted as%
+\[
+w_{12}^{\left( L\right) }\text{.} 
+\]
+
+The derivative of the loss $C_{0}$ with respect to this particular weight $%
+w_{12}^{(L)}$ is denoted as%
+\[
+\frac{\partial C_{0}}{\partial w_{12}^{(L)}}\text{.} 
+\]
+
+Since $C_{0}$ depends on $a_{1}^{\left( L\right) }$, and $a_{1}^{\left(
+L\right) }$ depends on $z_{1}^{(L)}$, and $z_{1}^{(L)}$ depends on $%
+w_{12}^{(L)}$, then the chain rule tells us that to differentiate $C_{0}$
+with respect to $w_{12}^{(L)}$ we take the product of the derivatives of the
+composed function.
+
+This is expressed as 
+\[
+\frac{\partial C_{0}}{\partial w_{12}^{(L)}}=\left( \frac{\partial C_{0}}{%
+\partial a_{1}^{(L)}}\right) \left( \frac{\partial a_{1}^{(L)}}{\partial
+z_{1}^{(L)}}\right) \left( \frac{\partial z_{1}^{(L)}}{\partial w_{12}^{(L)}}%
+\right) \text{.} 
+\]%
+Let's break down each term from the expression on the right hand side of the
+above equation.
+
+\subparagraph{\protect\vspace{1pt}The first term: $\frac{\partial C_{0}}{%
+\partial a_{1}^{(L)}}$}
+
+We know that%
+\[
+C_{0}=\sum_{j=0}^{n-1}\left( a_{j}^{(L)}-y_{j}\right) ^{2}\text{.} 
+\]
+
+Therefore,%
+\[
+\frac{\partial C_{0}}{\partial a_{1}^{(L)}}=\frac{\partial }{\partial
+a_{1}^{(L)}}\left( \sum_{j=0}^{n-1}\left( a_{j}^{(L)}-y_{j}\right)
+^{2}\right) \text{.} 
+\]
+
+Expanding the sum, we see%
+\begin{eqnarray*}
+\frac{\partial }{\partial a_{1}^{(L)}}\left( \sum_{j=0}^{n-1}\left(
+a_{j}^{(L)}-y_{j}\right) ^{2}\right) &=&\frac{\partial }{\partial a_{1}^{(L)}%
+}\left( \left( a_{0}^{(L)}-y_{0}\right) ^{2}+\left( a_{1}^{(L)}-y_{1}\right)
+^{2}+\left( a_{2}^{(L)}-y_{2}\right) ^{2}+\left( a_{3}^{(L)}-y_{3}\right)
+^{2}\right) \\
+&=&\frac{\partial }{\partial a_{1}^{(L)}}\left( \left(
+a_{0}^{(L)}-y_{0}\right) ^{2}\right) +\frac{\partial }{\partial a_{1}^{(L)}}%
+\left( \left( a_{1}^{(L)}-y_{1}\right) ^{2}\right) +\frac{\partial }{%
+\partial a_{1}^{(L)}}\left( \left( a_{2}^{(L)}-y_{2}\right) ^{2}\right) +%
+\frac{\partial }{\partial a_{1}^{(L)}}\left( \left( a_{3}^{(L)}-y_{3}\right)
+^{2}\right) \\
+&=&2\left( a_{1}^{\left( L\right) }-y_{1}\right) \text{.}
+\end{eqnarray*}
+So the loss from the network for a single input sample will respond to a
+small change in the activation output from node $1$ in layer $L$ by an
+amount equal to two times the difference of the activation output $a_{1}\ $%
+for node $1$ and the desired output $y_{1}$ for node $1$.
+
+\subparagraph{The second term: $\frac{\partial a_{1}^{(L)}}{\partial
+z_{1}^{(L)}}$}
+
+We know that for each node $j$ in the output layer $L$, we have 
+\[
+a_{j}^{\left( L\right) }=g^{\left( L\right) }\left( z_{j}^{\left( L\right)
+}\right) \text{,} 
+\]%
+and since $j=1$, we have%
+\[
+a_{1}^{\left( L\right) }=g^{\left( L\right) }\left( z_{1}^{\left( L\right)
+}\right) \text{.} 
+\]
+
+Therefore,%
+\begin{eqnarray*}
+\frac{\partial a_{1}^{(L)}}{\partial z_{1}^{(L)}} &=&\frac{\partial }{%
+\partial z_{1}^{(L)}}\left( g^{\left( L\right) }\left( z_{1}^{\left(
+L\right) }\right) \right) \\
+&=&g^{^{\prime }\left( L\right) }\left( z_{1}^{\left( L\right) }\right) 
+\text{.}
+\end{eqnarray*}%
+So this is just the direct derivative of $a_{1}^{(L)}$ since $a_{1}^{(L)}$
+is a direct function of $z_{1}^{\left( L\right) }$.
+
+\subparagraph{The third term: $\frac{\partial z_{1}^{(L)}}{\partial
+w_{12}^{(L)}}$}
+
+\vspace{1pt}We know that, for each node $j$ in the output layer $L$, we have 
+\[
+z_{j}^{(L)}=\sum_{k=0}^{n-1}w_{jk}^{(L)}a_{k}^{(L-1)}\text{.} 
+\]%
+Since $j=1$, we have%
+\[
+z_{1}^{(L)}=\sum_{k=0}^{n-1}w_{1k}^{(L)}a_{k}^{(L-1)}\text{.} 
+\]%
+Therefore,
+
+\[
+\frac{\partial z_{1}^{(L)}}{\partial w_{12}^{(L)}}=\frac{\partial }{\partial
+w_{12}^{(L)}}\left( \sum_{k=0}^{n-1}w_{1k}^{(L)}a_{k}^{(L-1)}\right) \text{.}
+\]%
+Expanding the sum, we see 
+\begin{eqnarray*}
+\frac{\partial }{\partial w_{12}^{(L)}}\left(
+\sum_{k=0}^{n-1}w_{1k}^{(L)}a_{k}^{(L-1)}\right) &=&\frac{\partial }{%
+\partial w_{12}^{(L)}}\left(
+w_{10}^{(L)}a_{0}^{(L-1)}+w_{11}^{(L)}a_{1}^{(L-1)}+w_{12}^{(L)}a_{2}^{(L-1)}+\cdots +w_{15}^{(L)}a_{5}^{(L-1)}\right)
+\\
+&=&\frac{\partial }{\partial w_{12}^{(L)}}w_{10}^{(L)}a_{0}^{(L-1)}+\frac{%
+\partial }{\partial w_{12}^{(L)}}w_{11}^{(L)}a_{1}^{(L-1)}+\frac{\partial }{%
+\partial w_{12}^{(L)}}w_{12}^{(L)}a_{2}^{(L-1)}+\cdots +\frac{\partial }{%
+\partial w_{12}^{(L)}}w_{15}^{(L)}a_{5}^{(L-1)} \\
+&=&a_{2}^{(L-1)}
+\end{eqnarray*}%
+So the input for node $1$ in layer $L$ will respond to a change in the
+weight $w_{12}^{(L)}$ by an amount equal to the activation output for node $%
+2 $ in the previous layer, $L-1$.
+
+\subparagraph{\protect\vspace{1pt}Combining terms}
+
+Combining all terms, we have%
+\begin{eqnarray*}
+\frac{\partial C_{0}}{\partial w_{12}^{(L)}} &=&\left( \frac{\partial C_{0}}{%
+\partial a_{1}^{(L)}}\right) \left( \frac{\partial a_{1}^{(L)}}{\partial
+z_{1}^{(L)}}\right) \left( \frac{\partial z_{1}^{(L)}}{\partial w_{12}^{(L)}}%
+\right) \\
+&=&2\left( a_{1}^{\left( L\right) }-y_{1}\right) \left( g^{\prime \left(
+L\right) }\left( z_{1}^{\left( L\right) }\right) \right) \left(
+a_{2}^{(L-1)}\right)
+\end{eqnarray*}
+
+\subparagraph{Conclude}
+
+So now, we've seen how to calculate the derivative of the loss with respect
+to one individual weight for one individual training sample.
+
+To calculate the derivative of the loss with respect to this same particular
+weight, $w_{12}$, for all $n$ training samples, we calculate the average
+derviative of the loss function over all $n$ training samples.
+
+This can be expressed as%
+\[
+\frac{\partial C}{\partial w_{12}^{(L)}}=\frac{1}{n}\sum_{i=0}^{n-1}\frac{%
+\partial C_{i}}{\partial w_{12}^{(L)}}\text{.} 
+\]
+
+We would then do this same process for each weight in the network to
+calculate the derivative of $C\ $with respect to each weight.
+
+\subsubsection{\protect\vspace{1pt}Derivative of the loss with respect to
+activation outputs}
+
+\subparagraph{Motivation}
+
+We left off seeing how we can calculate the gradient \newline
+of the loss function with respect to any weight in the network.
+
+Recall, the weight we chose to work with to explain this idea was $%
+w_{12}^{\left( L\right) }$, and we saw that 
+\[
+\frac{\partial C_{0}}{\partial w_{12}^{(L)}}=\left( \frac{\partial C_{0}}{%
+\partial a_{1}^{(L)}}\right) \left( \frac{\partial a_{1}^{(L)}}{\partial
+z_{1}^{(L)}}\right) \left( \frac{\partial z_{1}^{(L)}}{\partial w_{12}^{(L)}}%
+\right) \text{.} 
+\]%
+Suppose we choose to work with a weight that is not in the output layer,
+like $w_{22}^{\left( L-1\right) }$.
+
+Then the gradient of the loss with respect to this weight would be%
+\[
+\frac{\partial C_{0}}{\partial w_{22}^{(L-1)}}=\left( \frac{\partial C_{0}}{%
+\partial a_{2}^{(L-1)}}\right) \left( \frac{\partial a_{2}^{(L-1)}}{\partial
+z_{2}^{(L-1)}}\right) \left( \frac{\partial z_{2}^{(L-1)}}{\partial
+w_{22}^{(L-1)}}\right) \text{.} 
+\]%
+The second and third terms on the right hand side would be calculated in the
+exact same way as we saw for $w_{12}^{\left( L\right) }$. The first term on
+the right hand side, $\frac{\partial C_{0}}{\partial a_{2}^{(L-1)}}$, will
+not be calculated in the same way as before.
+
+We need to understand how to calculate this term in order to calculate the
+gradient of the loss function with respect to any weight that is \textit{not}
+in the output layer.
+
+The calculation of this term will be our focus.
+
+\subparagraph{Set up}
+
+We're going to show how we can calculate the derivative of the loss function%
+\newline
+with respect to the activation output for any node that is not in the output
+layer.
+
+Let's look at a single activation output for node $2$ in layer $L-1$.
+
+This is denoted as%
+\[
+a_{2}^{(L-1)}\text{.} 
+\]
+
+The derivative of the loss, $C_{0}$, with respect to this particular\newline
+activation output $a_{2}^{(L-1)}$ is denoted as%
+\[
+\frac{\partial C_{0}}{\partial a_{2}^{(L-1)}}\text{.} 
+\]
+
+Observe that for each node $j$ in $L$, the loss $C_{0}$ depends on on $%
+a_{j}^{\left( L\right) }$, and $a_{j}^{\left( L\right) }$ depends on $%
+z_{j}^{(L)}$.\newline
+$z_{j}^{(L)}$ depends on all of the weights connected to node $j$ from the
+previous layer, $L-1$, as well as all the activation outputs from $L-1$. 
+\newline
+So, $z_{j}^{\left( L\right) }$ depends on $a_{2}^{(L-1)}$.
+
+The chain rule tells us that to differentiate $C_{0}$ with respect to $%
+a_{2}^{(L-1)}$, we take the product of the derivatives of the composed
+function. This derivative can be expressed as 
+\[
+\frac{\partial C_{0}}{\partial a_{2}^{(L-1)}}=\sum_{j=0}^{n-1}\left( \left( 
+\frac{\partial C_{0}}{\partial a_{j}^{(L)}}\right) \left( \frac{\partial
+a_{j}^{(L)}}{\partial z_{j}^{(L)}}\right) \left( \frac{\partial z_{j}^{(L)}}{%
+\partial a_{2}^{(L-1)}}\right) \rule[-0.05in]{0in}{0.2in}\right) \text{.} 
+\]
+
+\vspace{1pt}This equation looks almost identical to the equation we obtained
+for the derivative of the loss with respect to a given weight.\newline
+Recall that this previous derivative with respect to a given weight was
+expressed as 
+\[
+\frac{\partial C_{0}}{\partial w_{12}^{(L)}}=\left( \frac{\partial C_{0}}{%
+\partial a_{1}^{(L)}}\right) \left( \frac{\partial a_{1}^{(L)}}{\partial
+z_{1}^{(L)}}\right) \left( \frac{\partial z_{1}^{(L)}}{\partial w_{12}^{(L)}}%
+\right) \text{.} 
+\]
+
+The two differences between the derivative of the loss with respect to an
+activation output, and the derivative of the loss with respect to a weight
+are:
+
+\vspace{1pt}1. The summation operation.\newline
+2. The last term on the right hand side.
+
+The reason for the summation here is due to the fact that a change in one
+activation output in the previous layer is going to affect each node $j$ in
+the following layer $L$, so we need to sum up these effects.
+
+We can see that the first and second terms on the right hand side of the
+equation are the same as the first and second terms in the last equation
+with regards to the $w_{12}^{\left( L\right) }$ when $j=1$. Since we've
+already gone through the work to find how to calculate these two
+derivatives, we won't do it again here.
+
+We'll only focus on breaking down the third term.
+
+\subparagraph{The third term: $\frac{\partial z_{j}^{(L)}}{\partial
+a_{2}^{(L-1)}}$}
+
+We know for each node $j$ in layer $L$ that%
+\[
+z_{j}^{(L)}=\sum_{k=0}^{n-1}w_{jk}^{(L)}a_{k}^{(L-1)}\text{.} 
+\]%
+Therefore, 
+\[
+\frac{\partial z_{j}^{(L)}}{\partial a_{2}^{(L-1)}}=\frac{\partial }{%
+\partial a_{2}^{(L-1)}}\sum_{k=0}^{n-1}w_{jk}^{(L)}a_{k}^{(L-1)}\text{.} 
+\]%
+Expanding the sum, we have%
+\begin{eqnarray*}
+\frac{\partial }{\partial a_{2}^{(L-1)}}%
+\sum_{k=0}^{n-1}w_{jk}^{(L)}a_{k}^{(L-1)} &=&\frac{\partial }{\partial
+a_{2}^{(L-1)}}\left(
+w_{j0}^{(L)}a_{0}^{(L-1)}+w_{j1}^{(L)}a_{1}^{(L-1)}+w_{j2}^{(L)}a_{2}^{(L-1)}\cdots +w_{j5}^{(L)}a_{5}^{(L-1)}\right)
+\\
+&=&\frac{\partial }{\partial a_{2}^{(L-1)}}w_{j0}^{(L)}a_{0}^{(L-1)}+\frac{%
+\partial }{\partial a_{2}^{(L-1)}}w_{j1}^{(L)}a_{1}^{(L-1)}+\frac{\partial }{%
+\partial a_{2}^{(L-1)}}w_{j2}^{(L)}a_{2}^{(L-1)}\cdots +\frac{\partial }{%
+\partial a_{2}^{(L-1)}}w_{j5}^{(L)}a_{5}^{(L-1)} \\
+&=&w_{j2}^{(L)}\text{.}
+\end{eqnarray*}
+
+So the input for any node $j$ in layer $L$ will respond to a change in $%
+a_{2}^{\left( L-1\right) }$ by an amount equal to the weight connecting node 
+$2$ in layer $L-1$ to node $j$ in layer $L$.\vspace{1pt}
+
+\subparagraph{Combining terms}
+
+Combining all terms, we have
+
+\begin{eqnarray*}
+\frac{\partial C_{0}}{\partial a_{2}^{(L-1)}} &=&\sum_{j=0}^{n-1}\left(
+\left( \frac{\partial C_{0}}{\partial a_{j}^{(L)}}\right) \left( \frac{%
+\partial a_{j}^{(L)}}{\partial z_{j}^{(L)}}\right) \left( \frac{\partial
+z_{j}^{(L)}}{\partial a_{2}^{(L-1)}}\right) \right) \\
+&=&\sum_{j=0}^{n-1}\left( 2\left( a_{j}^{\left( L\right) }-y_{j}\right)
+\left( g^{\prime \left( L\right) }\left( z_{j}^{\left( L\right) }\right)
+\right) \left( w_{j2}^{(L)}\right) \rule[-0.1in]{0in}{0.3in}\right) \text{.}
+\end{eqnarray*}
+
+Now we can use this result to calculate the gradient of the loss with
+respect to any weight connected \newline
+to node $2$ in layer $L-1$, like we saw for $w_{22}^{(L-1)}$, for example,
+with the following equation. 
+\[
+\frac{\partial C_{0}}{\partial w_{22}^{(L-1)}}=\left( \frac{\partial C_{0}}{%
+\partial a_{2}^{(L-1)}}\right) \left( \frac{\partial a_{2}^{(L-1)}}{\partial
+z_{2}^{(L-1)}}\right) \left( \frac{\partial z_{2}^{(L-1)}}{\partial
+w_{22}^{(L-1)}}\right) 
+\]
+
+\vspace{1pt}Note, to find the derivative of the loss function with respect
+to this same particular activation output, $a_{2}^{(L-1)}$, for all $n$
+training samples, we calculate the average derviative of the loss function
+over all $n$ training samples. This can be expressed as%
+\[
+\frac{\partial C}{\partial a_{2}^{(L-1)}}=\frac{1}{n}\sum_{i=0}^{n-1}\frac{%
+\partial C_{i}}{\partial a_{2}^{(L-1)}}\text{.} 
+\]
+
+\end{document}

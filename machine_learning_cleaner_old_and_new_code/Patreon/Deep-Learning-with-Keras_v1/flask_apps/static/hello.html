@@ -1,0 +1,33 @@
+<!DOCTYPE html> <!-- what type of document this is -->
+<html> <!-- this is html document -->
+<head> <!-- in head we store metadata about the webpage -->
+    <title>greeting app</title> <!-- *says all the fonts on webpage have this size -->
+    <style>
+        * { 
+            font-size:30px; 
+        }
+    </style>
+</head>
+<body> <!-- the structure and what type of elements are on the webpage -->
+    <input id="name-input" type="text"/> <!-- text box for name, text type-->
+    <button id="name-button">Submit Name</button>
+    <p id="greeting"></p> <!-- paragraph, hello msg displayed here -->
+    
+    <!-- script gives the logic, we use java script here  -->
+    <!-- library to simplify the java script code-->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        <!-- refering to button-->
+        $("#name-button").click(function(event){
+            let message = {
+                name: $("#name-input").val()  <!-- refering to input name-->
+            }
+            <!-- where to send the data, what to send, what to do-->
+            $.post("http://127.0.0.1:5000/hello", JSON.stringify(message), function(response){
+                $("#greeting").text(response.greeting);
+                console.log(response);<!-- login the response-->
+            });
+        });
+    </script>
+</body>
+</html>
